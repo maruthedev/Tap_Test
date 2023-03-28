@@ -1,5 +1,7 @@
-import model.Handler;
+import controller.Handler;
+import model.Subject;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class StartApp {
@@ -7,7 +9,88 @@ public class StartApp {
     public static void main(String[] args) {
         Handler handler = Handler.getInstance();
         Scanner scanner = new Scanner(System.in);
-        int N = Integer.parseInt(scanner.nextLine()) ;
+
+        /**
+         * Set passed conditions
+         */
+        System.out.println("-----------------------");
+        System.out.println("|Set passed conditions|");
+        System.out.println("-----------------------");
+        System.out.println("Set minimum total points: ");
+        try {
+            Handler.MINIMUM_TOTAL_POINTS = Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("minimum total points is set to default");
+        }
+
+        System.out.println("Set minimum science points: ");
+        try {
+            Handler.MINIMUM_SCIENCE_POINTS = Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("minimum science points is set to default");
+        }
+
+        System.out.println("Set minimum humanities points: ");
+        try {
+            Handler.MINIMUM_HUMANITIES_POINTS = Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            System.out.println("minimum humanities points is set to default");
+        }
+
+
+        /**
+         * Additional Subject
+         */
+        System.out.println("--------------------");
+        System.out.println("|Additional Subject|");
+        System.out.println("--------------------");
+        System.out.println("Number of additional subjects (current is " + Handler.TOTAL_SUBJECTS + "): ");
+        int additionalSubjectNumber = Integer.parseInt(scanner.nextLine());
+        for (int i = 0; i < additionalSubjectNumber; i++) {
+            Subject additionalSubject = new Subject();
+            System.out.println("Subject Name: ");
+            scanner.nextLine();
+            additionalSubject.setName(++Handler.TOTAL_SUBJECTS);
+            System.out.println("Subject Type (1-science, 2-humanities, 3-other): ");
+            String type = scanner.nextLine();
+            try {
+                int typeN = Integer.parseInt(type);
+                switch (typeN) {
+                    case 1:
+                        additionalSubject.setType(Subject.TYPE_SCIENCE);
+                        break;
+                    case 2:
+                        additionalSubject.setType(Subject.TYPE_HUMANITIES);
+                        break;
+                    case 3:
+                        additionalSubject.setType(Subject.TYPE_OTHER);
+                        break;
+                }
+            } catch (Exception e) {
+                switch (type) {
+                    case Subject.TYPE_SCIENCE:
+                        additionalSubject.setType(Subject.TYPE_SCIENCE);
+                        break;
+                    case Subject.TYPE_HUMANITIES:
+                        additionalSubject.setType(Subject.TYPE_HUMANITIES);
+                        break;
+                    case Subject.TYPE_OTHER:
+                        additionalSubject.setType(Subject.TYPE_OTHER);
+                        break;
+                }
+            }
+
+            additionalSubject.setPoint(0);
+            Handler.getSubjectsInExam().add(additionalSubject);
+        }
+
+        /**
+         * Input dataset
+         */
+        System.out.println("---------------");
+        System.out.println("|Input dataset|");
+        System.out.println("---------------");
+        int N = Integer.parseInt(scanner.nextLine());
         while (N-- > 0) {
             String input = scanner.nextLine();
             if (handler.examine(handler.stringToExaminee(input))) {
@@ -15,6 +98,7 @@ public class StartApp {
             }
         }
         System.out.println(Handler.PASSED_EXAMINEES);
+
     }
 }
 
@@ -25,6 +109,13 @@ l 68 81 81 60 78
 s 63 76 55 80 75
 s 90 100 96 10 10
 l 88 78 81 97 93
+
+5
+s 70 78 82 57 74 -50
+l 68 81 81 60 78 -30
+s 63 76 55 80 75 -50
+s 90 100 96 10 10 -50
+l 88 78 81 97 93 50
 
 20
 l 100 67 39 85 87
