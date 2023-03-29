@@ -1,18 +1,28 @@
 import controller.Handler;
 import model.Subject;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class StartApp {
+    private final Handler handler;
+    private final Scanner scanner;
 
-    public static void main(String[] args) {
-        Handler handler = Handler.getInstance();
-        Scanner scanner = new Scanner(System.in);
+    StartApp() {
+        handler = Handler.getInstance();
+        scanner = new Scanner(System.in);
+    }
 
-        /**
-         * Set passed conditions
-         */
+    private void run() {
+        this.setPassedConditions();
+        this.addSubject();
+        this.adjustExisingSubject();
+        this.inputDataSet();
+    }
+
+    /**
+     * Set passed conditions
+     */
+    private void setPassedConditions() {
         System.out.println("-----------------------");
         System.out.println("|Set passed conditions|");
         System.out.println("-----------------------");
@@ -20,27 +30,28 @@ public class StartApp {
         try {
             Handler.MINIMUM_TOTAL_POINTS = Integer.parseInt(scanner.nextLine());
         } catch (Exception e) {
-            System.out.println("minimum total points is set to default");
+            System.out.println("Minimum total points is set to default: " + Handler.MINIMUM_TOTAL_POINTS);
         }
 
         System.out.println("Set minimum science points: ");
         try {
             Handler.MINIMUM_SCIENCE_POINTS = Integer.parseInt(scanner.nextLine());
         } catch (Exception e) {
-            System.out.println("minimum science points is set to default");
+            System.out.println("minimum science points is set to default: " + Handler.MINIMUM_SCIENCE_POINTS);
         }
 
         System.out.println("Set minimum humanities points: ");
         try {
             Handler.MINIMUM_HUMANITIES_POINTS = Integer.parseInt(scanner.nextLine());
         } catch (Exception e) {
-            System.out.println("minimum humanities points is set to default");
+            System.out.println("minimum humanities points is set to default: " + Handler.MINIMUM_HUMANITIES_POINTS);
         }
+    }
 
-
-        /**
-         * Additional Subject
-         */
+    /**
+     * Additional Subject
+     */
+    private void addSubject() {
         System.out.println("--------------------");
         System.out.println("|Additional Subject|");
         System.out.println("--------------------");
@@ -52,41 +63,58 @@ public class StartApp {
             scanner.nextLine();
             additionalSubject.setName(++Handler.TOTAL_SUBJECTS);
             System.out.println("Subject Type (1-science, 2-humanities, 3-other): ");
-            String type = scanner.nextLine();
-            try {
-                int typeN = Integer.parseInt(type);
-                switch (typeN) {
-                    case 1:
-                        additionalSubject.setType(Subject.TYPE_SCIENCE);
-                        break;
-                    case 2:
-                        additionalSubject.setType(Subject.TYPE_HUMANITIES);
-                        break;
-                    case 3:
-                        additionalSubject.setType(Subject.TYPE_OTHER);
-                        break;
-                }
-            } catch (Exception e) {
-                switch (type) {
-                    case Subject.TYPE_SCIENCE:
-                        additionalSubject.setType(Subject.TYPE_SCIENCE);
-                        break;
-                    case Subject.TYPE_HUMANITIES:
-                        additionalSubject.setType(Subject.TYPE_HUMANITIES);
-                        break;
-                    case Subject.TYPE_OTHER:
-                        additionalSubject.setType(Subject.TYPE_OTHER);
-                        break;
-                }
-            }
 
+            while (additionalSubject.getType() == null) {
+                additionalSubject.setType(scanner.nextLine());
+            }
             additionalSubject.setPoint(0);
             Handler.getSubjectsInExam().add(additionalSubject);
         }
+    }
 
-        /**
-         * Input dataset
-         */
+    /**
+     * Adjust existing subjects
+     */
+    private void adjustExisingSubject() {
+        adjust:
+        while (true) {
+            System.out.println("-------------------------");
+            System.out.println("|Adjust Existing Subject|");
+            System.out.println("-------------------------");
+            for (Subject subject : Handler.getSubjectsInExam()) {
+                if (subject == null) continue;
+                System.out.println(subject.toString());
+            }
+            System.out.println("Choose a Subject to adjust, or 'q' to skip");
+            String option = scanner.nextLine();
+            if (option.equals("q")) break adjust;
+            Subject subject = Handler.getSubjectsInExam().get(Integer.parseInt(option) - 1);
+            System.out.println("Subject " + option + " 'a' to adjust, 'd' to delete or 'q' to skip");
+
+            String optionAdjust = scanner.nextLine();
+            if (optionAdjust.equals("a")) {
+                System.out.println("Change subject Type to (1-science, 2-humanities, 3-other or 'q' to skip): ");
+                String optionType = scanner.nextLine();
+                if (optionType.equals("q")) break adjust;
+                subject.setType(optionType);
+                while (subject.getType() == null) {
+                    subject.setType(scanner.nextLine());
+                }
+            } else if (optionAdjust.equals("d")) {
+                System.out.println("Delete subject " + subject.getName() + "? y/n");
+                String optionDelete = scanner.nextLine();
+                if (optionDelete.equals("y")) {
+                    Handler.getSubjectsInExam().remove(subject);
+                    --Handler.TOTAL_SUBJECTS;
+                }
+            }
+        }
+    }
+
+    /**
+     * Input dataset
+     */
+    private void inputDataSet() {
         System.out.println("---------------");
         System.out.println("|Input dataset|");
         System.out.println("---------------");
@@ -98,8 +126,14 @@ public class StartApp {
             }
         }
         System.out.println(Handler.PASSED_EXAMINEES);
-
     }
+
+    public static void main(String[] args) {
+        StartApp app = new StartApp();
+        app.run();
+    }
+
+
 }
 
 /*

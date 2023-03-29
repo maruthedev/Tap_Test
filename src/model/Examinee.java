@@ -39,15 +39,17 @@ public class Examinee {
             case Subject.TYPE_SCIENCE:
             case Subject.TYPE_OTHER:
                 for (Subject subject : subjects) {
+                    if(subject == null) continue;
                     if (subject.getType().equals(type)) {
                         points += subject.getPoint();
                     }
                 }
                 break;
             default:
-                points += getSubjectPoints(Subject.TYPE_SCIENCE)
-                        + getSubjectPoints(Subject.TYPE_HUMANITIES)
-                        + getSubjectPoints(Subject.TYPE_OTHER);
+                for (Subject subject : subjects) {
+                    if(subject == null) continue;
+                    points += subject.getPoint();
+                }
                 break;
         }
 

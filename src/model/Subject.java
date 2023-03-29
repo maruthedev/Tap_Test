@@ -14,11 +14,11 @@ public class Subject {
     private String type;
     private int point;
 
-    public Subject(){
+    public Subject() {
 
     }
 
-    public Subject(int name, String type, int point){
+    public Subject(int name, String type, int point) {
         this.name = name;
         this.type = type;
         this.point = point;
@@ -37,7 +37,32 @@ public class Subject {
     }
 
     public void setType(String type) {
-        this.type = type;
+        try {
+            int typeN = Integer.parseInt(type);
+            switch (typeN) {
+                case 1:
+                    this.type = Subject.TYPE_SCIENCE;
+                    break;
+                case 2:
+                    this.type = Subject.TYPE_HUMANITIES;
+                    break;
+                case 3:
+                    this.type = Subject.TYPE_OTHER;
+                    break;
+            }
+        } catch (Exception e) {
+            switch (type) {
+                case Subject.TYPE_SCIENCE:
+                case Subject.TYPE_HUMANITIES:
+                case Subject.TYPE_OTHER:
+                    this.type = type;
+                    break;
+                default:
+                    System.out.println("There's no subject type like '" + type + "', please input again, exception: " + e.getMessage());
+                    this.type = null;
+                    break;
+            }
+        }
     }
 
     public int getPoint() {
@@ -46,5 +71,10 @@ public class Subject {
 
     public void setPoint(int point) {
         this.point = point;
+    }
+
+    @Override
+    public String toString() {
+        return "name: " + name + ", type:" + type;
     }
 }

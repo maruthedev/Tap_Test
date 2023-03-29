@@ -24,7 +24,7 @@ public class Handler {
 
     private Handler() {
         subjectsInExam = new ArrayList<Subject>();
-        for (int i =  1; i <= Handler.TOTAL_SUBJECTS; i++) {
+        for (int i = 1; i <= Handler.TOTAL_SUBJECTS; i++) {
             Subject subject = null;
             switch (i) {
                 case Subject.ENGLISH:
@@ -53,7 +53,7 @@ public class Handler {
         try {
             tokens = s.split(" ");
         } catch (Exception e) {
-            System.out.println("NO MORE DATA");
+            System.out.println("NO MORE DATA, exception: " + e.getMessage());
             return null;
         }
 
@@ -62,31 +62,13 @@ public class Handler {
                 examinee.setType(tokens[0]);
             }
         } catch (Exception e) {
-            System.out.println("NO TYPE OF EXAMINEE LIKE " + tokens[0]);
+            System.out.println("NO TYPE OF EXAMINEE LIKE " + tokens[0] + ", exception: " + e.getMessage());
             return null;
         }
 
         for (int i = 1; i <= Handler.TOTAL_SUBJECTS; i++) {
-            switch (i) {
-                case Subject.ENGLISH:
-                    subjectsInExam.get(Subject.ENGLISH - 1).setPoint(Integer.parseInt(tokens[i]));
-                    break;
-                case Subject.MATH:
-                    subjectsInExam.get(Subject.MATH - 1).setPoint(Integer.parseInt(tokens[i]));
-                    break;
-                case Subject.SCIENCE:
-                    subjectsInExam.get(Subject.SCIENCE - 1).setPoint(Integer.parseInt(tokens[i]));
-                    break;
-                case Subject.JAPANESE:
-                    subjectsInExam.get(Subject.JAPANESE - 1).setPoint(Integer.parseInt(tokens[i]));
-                    break;
-                case Subject.GEO_HIS:
-                    subjectsInExam.get(Subject.GEO_HIS - 1).setPoint(Integer.parseInt(tokens[i]));
-                    break;
-                default:
-                    subjectsInExam.get(i - 1).setPoint(Integer.parseInt(tokens[i]));
-                    break;
-            }
+            if (subjectsInExam.get(i - 1) == null) continue;
+            subjectsInExam.get(i - 1).setPoint(Integer.parseInt(tokens[i]));
         }
         examinee.setSubjects(subjectsInExam);
 
