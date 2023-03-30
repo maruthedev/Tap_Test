@@ -28,19 +28,19 @@ public class Handler {
             Subject subject = null;
             switch (i) {
                 case Subject.ENGLISH:
-                    subject = new Subject(Subject.ENGLISH, Subject.TYPE_OTHER, 0);
+                    subject = new Subject(Subject.ENGLISH, Subject.TYPE_OTHER, 0, "ENGLISH");
                     break;
                 case Subject.MATH:
-                    subject = new Subject(Subject.MATH, Subject.TYPE_SCIENCE, 0);
+                    subject = new Subject(Subject.MATH, Subject.TYPE_SCIENCE, 0, "MATH");
                     break;
                 case Subject.SCIENCE:
-                    subject = new Subject(Subject.SCIENCE, Subject.TYPE_SCIENCE, 0);
+                    subject = new Subject(Subject.SCIENCE, Subject.TYPE_SCIENCE, 0, "SCIENCE");
                     break;
                 case Subject.JAPANESE:
-                    subject = new Subject(Subject.JAPANESE, Subject.TYPE_HUMANITIES, 0);
+                    subject = new Subject(Subject.JAPANESE, Subject.TYPE_HUMANITIES, 0, "JAPANESE");
                     break;
                 case Subject.GEO_HIS:
-                    subject = new Subject(Subject.GEO_HIS, Subject.TYPE_HUMANITIES, 0);
+                    subject = new Subject(Subject.GEO_HIS, Subject.TYPE_HUMANITIES, 0, "GEO_HIS");
                     break;
             }
             subjectsInExam.add(subject);
@@ -66,12 +66,16 @@ public class Handler {
             return null;
         }
 
-        for (int i = 1; i <= Handler.TOTAL_SUBJECTS; i++) {
-            if (subjectsInExam.get(i - 1) == null) continue;
-            subjectsInExam.get(i - 1).setPoint(Integer.parseInt(tokens[i]));
+        int len = Math.max(tokens.length - 1, Handler.TOTAL_SUBJECTS);
+        try {
+            for (int i = 1; i <= len; i++) {
+                subjectsInExam.get(i - 1).setPoint(Integer.parseInt(tokens[i]));
+            }
+        } catch (Exception e) {
+            System.out.println("Total examinee's subjects and subjects in exam does not match. Please input again. Exception: " + e.getMessage());
+            return null;
         }
         examinee.setSubjects(subjectsInExam);
-
         return examinee;
     }
 

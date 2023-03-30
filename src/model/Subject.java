@@ -1,5 +1,7 @@
 package model;
 
+import controller.Handler;
+
 public class Subject {
     public static final String TYPE_SCIENCE = "science";
     public static final String TYPE_HUMANITIES = "humanities";
@@ -10,25 +12,42 @@ public class Subject {
     public static final int JAPANESE = 4;
     public static final int GEO_HIS = 5;
 
-    private int name;
+    private int id;
     private String type;
     private int point;
+    private String name;
 
     public Subject() {
 
     }
 
-    public Subject(int name, String type, int point) {
-        this.name = name;
+    public Subject(int id, String type, int point, String name) {
+        this.id = id;
         this.type = type;
         this.point = point;
+        this.name = name;
     }
 
-    public int getName() {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
         return name;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
+        for(Subject subject : Handler.getSubjectsInExam()){
+            if(subject.getName().equalsIgnoreCase(name)){
+                this.name = null;
+                System.out.println("There is already a subject with the name " + name + ", please try again");
+                return;
+            }
+        }
         this.name = name;
     }
 
@@ -37,31 +56,23 @@ public class Subject {
     }
 
     public void setType(String type) {
-        try {
-            int typeN = Integer.parseInt(type);
-            switch (typeN) {
-                case 1:
-                    this.type = Subject.TYPE_SCIENCE;
-                    break;
-                case 2:
-                    this.type = Subject.TYPE_HUMANITIES;
-                    break;
-                case 3:
-                    this.type = Subject.TYPE_OTHER;
-                    break;
-            }
-        } catch (Exception e) {
-            switch (type) {
-                case Subject.TYPE_SCIENCE:
-                case Subject.TYPE_HUMANITIES:
-                case Subject.TYPE_OTHER:
-                    this.type = type;
-                    break;
-                default:
-                    System.out.println("There's no subject type like '" + type + "', please input again, exception: " + e.getMessage());
-                    this.type = null;
-                    break;
-            }
+        switch (type) {
+            case "1":
+            case Subject.TYPE_SCIENCE:
+                this.type = Subject.TYPE_SCIENCE;
+                break;
+            case "2":
+            case Subject.TYPE_HUMANITIES:
+                this.type = Subject.TYPE_HUMANITIES;
+                break;
+            case "3":
+            case Subject.TYPE_OTHER:
+                this.type = Subject.TYPE_OTHER;
+                break;
+            default:
+                System.out.println("There's no subject type like '" + type + "', please input again");
+                this.type = null;
+                break;
         }
     }
 
@@ -75,6 +86,6 @@ public class Subject {
 
     @Override
     public String toString() {
-        return "name: " + name + ", type:" + type;
+        return "id: " + id + "name: " + name + ", type:" + type;
     }
 }

@@ -1,4 +1,5 @@
 import controller.Handler;
+import model.Examinee;
 import model.Subject;
 
 import java.util.Scanner;
@@ -56,12 +57,21 @@ public class StartApp {
         System.out.println("|Additional Subject|");
         System.out.println("--------------------");
         System.out.println("Number of additional subjects (current is " + Handler.TOTAL_SUBJECTS + "): ");
-        int additionalSubjectNumber = Integer.parseInt(scanner.nextLine());
+        int additionalSubjectNumber;
+        try {
+            additionalSubjectNumber = Integer.parseInt(scanner.nextLine());
+        } catch (Exception e) {
+            additionalSubjectNumber = 0;
+            System.out.println("NO SUBJECT HAS BEEN ADDED");
+        }
         for (int i = 0; i < additionalSubjectNumber; i++) {
             Subject additionalSubject = new Subject();
             System.out.println("Subject Name: ");
-            scanner.nextLine();
-            additionalSubject.setName(++Handler.TOTAL_SUBJECTS);
+            while (additionalSubject.getName() == null) {
+                additionalSubject.setName(scanner.nextLine());
+            }
+
+            additionalSubject.setId(++Handler.TOTAL_SUBJECTS);
             System.out.println("Subject Type (1-science, 2-humanities, 3-other): ");
 
             while (additionalSubject.getType() == null) {
@@ -82,13 +92,26 @@ public class StartApp {
             System.out.println("|Adjust Existing Subject|");
             System.out.println("-------------------------");
             for (Subject subject : Handler.getSubjectsInExam()) {
-                if (subject == null) continue;
                 System.out.println(subject.toString());
             }
             System.out.println("Choose a Subject to adjust, or 'q' to skip");
-            String option = scanner.nextLine();
-            if (option.equals("q")) break adjust;
-            Subject subject = Handler.getSubjectsInExam().get(Integer.parseInt(option) - 1);
+            String option;
+            Subject subject = null;
+            chooseSubject:
+            while (true) {
+                option = scanner.nextLine();
+                if (option.equals("q")) break adjust;
+                try {
+                    for (Subject s : Handler.getSubjectsInExam()) {
+                        if (s.getId() != Integer.parseInt(option)) continue;
+                        subject = s;
+                        break chooseSubject;
+                    }
+                } catch (Exception e) {
+                    System.out.println("There's no subject has id like " + option + ", please try again");
+                }
+            }
+
             System.out.println("Subject " + option + " 'a' to adjust, 'd' to delete or 'q' to skip");
 
             String optionAdjust = scanner.nextLine();
@@ -120,10 +143,11 @@ public class StartApp {
         System.out.println("---------------");
         int N = Integer.parseInt(scanner.nextLine());
         while (N-- > 0) {
-            String input = scanner.nextLine();
-            if (handler.examine(handler.stringToExaminee(input))) {
-                Handler.PASSED_EXAMINEES++;
+            Examinee examinee = null;
+            while (examinee == null) {
+                examinee = handler.stringToExaminee(scanner.nextLine());
             }
+            if (handler.examine(examinee)) Handler.PASSED_EXAMINEES++;
         }
         System.out.println(Handler.PASSED_EXAMINEES);
     }
